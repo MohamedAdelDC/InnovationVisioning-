@@ -1,0 +1,1557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pre-Summit One-on-Ones Dashboard</title>
+<style>
+  :root{
+    --bg:#0b1220;
+    --bg-soft:#0f172a;
+    --card:#0f1a2e;
+    --border:#1f2a3a;
+    --muted:#9aa7bc;
+    --text:#e8edf5;
+    --accent:#22c55e;
+    --accent2:#38bdf8;
+    --ok:#10b981;
+    --warn:#f59e0b;
+    --danger:#ef4444;
+  }
+  [data-theme="light"]{
+    --bg:#f7fafc;
+    --bg-soft:#ffffff;
+    --card:#ffffff;
+    --border:#e5e7eb;
+    --muted:#64748b;
+    --text:#0f172a;
+  }
+
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:linear-gradient(180deg,var(--bg),var(--bg-soft));color:var(--text);font-family:-apple-system, BlinkMacSystemFont,"Segoe UI", Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";font-size:16px;line-height:1.5}
+  a{color:var(--accent2);text-decoration:none}
+  .app{display:grid;grid-template-columns:280px 1fr;min-height:100vh}
+  .sidebar{background:rgba(255,255,255,0.03);backdrop-filter:saturate(140%) blur(6px);border-right:1px solid var(--border);padding:20px;position:sticky;top:0;height:100vh;overflow:auto}
+  .brand{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+  .brand .dot{width:12px;height:12px;border-radius:50%;background:conic-gradient(var(--accent),var(--accent2))}
+  .brand h1{font-size:18px;margin:0}
+  .nav button{display:flex;width:100%;align-items:center;gap:10px;background:transparent;border:0;color:var(--text);padding:10px 12px;border-radius:10px;cursor:pointer;font-size:15px;text-align:left}
+  .nav button:hover{background:#ffffff14}
+  .nav button.active{background:#0ea5e913;color:#e6f9ff;border:1px solid #22d3ee3a}
+  .nav .section{margin:8px 0 4px;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.06em}
+  .content{padding:28px;overflow:auto}
+  .toolbar{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:18px;align-items:center}
+  .toolbar button,.toolbar .ghost{background:var(--card);border:1px solid var(--border);color:var(--text);padding:10px 12px;border-radius:10px;cursor:pointer}
+  .toolbar button:hover{filter:brightness(1.05)}
+  .toolbar .ghost{opacity:.85}
+  .toolbar .right{margin-left:auto}
+  .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}
+  .card{grid-column:span 12;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;box-shadow:0 10px 24px rgba(0,0,0,.16)}
+  @media(min-width:980px){
+    .card.half{grid-column:span 6}
+    .card.third{grid-column:span 4}
+    .card.two{grid-column:span 8}
+    .card.quarter{grid-column:span 3}
+  }
+  .card h3{margin:0 0 8px 0;font-size:18px}
+  .muted{color:var(--muted)}
+  label{font-size:13px;color:var(--muted);display:block;margin:8px 0 6px}
+  input,select,textarea{width:100%;background:transparent;border:1px solid var(--border);border-radius:10px;padding:10px 12px;color:var(--text);font-size:14px}
+  textarea{min-height:88px;resize:vertical}
+  .row{display:grid;grid-template-columns:repeat(12,1fr);gap:10px}
+  .col-6{grid-column:span 6}
+  .col-4{grid-column:span 4}
+  .col-3{grid-column:span 3}
+  .col-8{grid-column:span 8}
+  .col-12{grid-column:span 12}
+  .btn{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(90deg,#0ea5e9,#22c55e);border:0;color:#00110a;padding:10px 14px;border-radius:10px;cursor:pointer;font-weight:600}
+  .btn:hover{filter:brightness(1.05)}
+  .btn.secondary{background:var(--card);border:1px solid var(--border);color:var(--text);font-weight:500}
+  .tag{font-size:11px;padding:4px 8px;border-radius:999px;background:#0ea5e91a;border:1px solid #22d3ee3a;color:#9ae6ff}
+  .tag.warn{background:#f59e0b1a;border-color:#f59e0b3a;color:#ffd695}
+  .tag.ok{background:#10b9811a;border-color:#10b9813a;color:#8ff3cf}
+  .tag.danger{background:#ef44441a;border-color:#ef44443a;color:#ffc4c4}
+  .list{display:grid;gap:10px;margin-top:10px}
+  .item{background:transparent;border:1px solid var(--border);border-radius:10px;padding:12px}
+  .item .rowtop{display:flex;justify-content:space-between;gap:10px;align-items:center}
+  .kvs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px}
+  .kv{background:transparent;border:1px dashed var(--border);border-radius:10px;padding:10px;font-size:13px;color:var(--text)}
+  .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  .divider{height:1px;background:var(--border);margin:14px 0}
+  .small{font-size:13px}
+  .inline{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .note{border:1px dashed var(--border);border-radius:10px;padding:10px;font-size:13px}
+  .badge{font-size:11px;padding:2px 6px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted)}
+  .quote{border-left:3px solid var(--accent);padding-left:10px;margin:6px 0;color:#d1fae5}
+  .status{display:inline-flex;align-items:center;gap:6px}
+  .dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+  .rag-green{background:var(--ok)}
+  .rag-amber{background:var(--warn)}
+  .rag-red{background:var(--danger)}
+  .pill{display:inline-block;padding:4px 8px;border-radius:999px;border:1px solid var(--border);font-size:12px}
+  .footer{color:var(--muted);font-size:12px;margin-top:12px}
+
+  /* print readout */
+  @media print{
+    .sidebar,.toolbar,.actions,.no-print{display:none !important}
+    body{background:white;color:black}
+    .card{border:0;box-shadow:none;background:white;}
+    .content{padding:0}
+    .grid{gap:8px}
+    .pill{border:1px solid #ddd;background:#fafafa;color:#111}
+  }
+</style>
+</head>
+<body>
+<div class="app" id="appRoot" data-theme="dark">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="dot"></div>
+      <h1>Pre-Summit One-on-Ones</h1>
+    </div>
+    <div class="muted small" style="margin-bottom:8px">Built for Mohamed - Data stays on your device unless you export</div>
+    <div class="nav">
+      <div class="section">Navigate</div>
+      <button data-page="home" class="active">Home</button>
+      <button data-page="interviews">Interviews</button>
+      <button data-page="guide">Interview guide</button>
+      <button data-page="insights">Insight cards</button>
+      <button data-page="themes">Synthesis themes</button>
+      <button data-page="summit">Summit design</button>
+      <button data-page="scoreboard">Scoreboard</button>
+      <button data-page="risks">Risk controls</button>
+      <button data-page="schedule">Scheduling</button>
+      <div class="section">Admin</div>
+      <button data-page="security">Security and backup</button>
+      <button data-page="export">Export and import</button>
+      <button data-page="about">About</button>
+    </div>
+  </aside>
+
+  <main class="content">
+    <div class="toolbar no-print">
+      <button id="newInterviewBtn">New interview</button>
+      <button id="newInsightBtn">New insight</button>
+      <button id="newThemeBtn">New theme</button>
+      <span class="ghost" id="saveState">All changes auto-saved</span>
+      <span class="right ghost">Program: <span id="programName">Ideal Jobsite 2028</span></span>
+      <button class="btn secondary right" id="themeToggle">Light - Dark</button>
+    </div>
+
+    <section id="page-home" class="page">
+      <div class="grid">
+        <div class="card half">
+          <h3>Quick overview</h3>
+          <p class="small muted">Interview, capture Insight cards, cluster themes, then generate a simple readout for executives.</p>
+          <div class="divider"></div>
+          <div class="kvs">
+            <div class="kv"><b id="countInterviews">0</b><br><span class="muted small">Interviews</span></div>
+            <div class="kv"><b id="countInsights">0</b><br><span class="muted small">Insight cards</span></div>
+            <div class="kv"><b id="countThemes">0</b><br><span class="muted small">Themes</span></div>
+            <div class="kv"><b id="countMetrics">0</b><br><span class="muted small">Scoreboard metrics</span></div>
+          </div>
+        </div>
+        <div class="card half">
+          <h3>Working assumptions</h3>
+          <div class="list">
+            <div class="note">North star: de-risk projects, improve predictability, and maximize productivity by connecting site data and the model environment into InEight for estimating, control, planning, and progress tracking.</div>
+            <div class="note">Scope signals: drone, 360 imagery, LiDAR, robotics, proximity tags, weather, concrete maturity, predictive safety, AI logistics, ERP and earned value, AI risk identification.</div>
+            <div class="note">Executives attend the summit. Field voices are represented through quotes and cards.</div>
+          </div>
+        </div>
+        <div class="card two">
+          <h3>Voice of the field - quick capture</h3>
+          <div class="inline">
+            <select id="quickInterviewSelect"></select>
+            <button class="btn secondary" onclick="openGuideForSelected()">Open guide for selected</button>
+            <button class="btn" onclick="openNewInsightFromInterview()">Create insight from selected</button>
+          </div>
+          <div class="divider"></div>
+          <div id="quickQuestions" class="small muted">Pick an interviewee to show their question set here.</div>
+        </div>
+        <div class="card two">
+          <h3>Two-page readout generator</h3>
+          <p class="small muted">Print this page to PDF for a quick pre-summit readout: one heatmap of pain and one loops list. Use your browser print command.</p>
+          <div class="inline">
+            <button class="btn secondary" onclick="renderHeatmap()">Build heatmap</button>
+            <button class="btn secondary" onclick="renderLoops()">Build loops list</button>
+            <button class="btn" onclick="window.print()">Print to PDF</button>
+          </div>
+          <div class="divider"></div>
+          <div id="readoutArea" class="list"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="page-interviews" class="page" style="display:none">
+      <div class="grid">
+        <div class="card two">
+          <h3>Interview tracker</h3>
+          <div class="row">
+            <div class="col-6">
+              <label>Search</label>
+              <input id="searchInterview" placeholder="Search by name, role, district, project" oninput="renderInterviewList()">
+            </div>
+            <div class="col-3">
+              <label>Category</label>
+              <select id="filterCategory" onchange="renderInterviewList()">
+                <option value="">All</option>
+              </select>
+            </div>
+            <div class="col-3">
+              <label>Status</label>
+              <select id="filterStatus" onchange="renderInterviewList()">
+                <option value="">All</option>
+                <option>Not scheduled</option>
+                <option>Scheduled</option>
+                <option>Completed</option>
+              </select>
+            </div>
+          </div>
+          <div class="list" id="interviewList"></div>
+        </div>
+        <div class="card">
+          <h3>New interview</h3>
+          <div class="row">
+            <div class="col-6"><label>Name</label><input id="iv_name"></div>
+            <div class="col-6"><label>Role</label><input id="iv_role" placeholder="Senior Superintendent, PM, HSE Lead"></div>
+            <div class="col-4"><label>Category</label><select id="iv_category"></select></div>
+            <div class="col-4"><label>District</label><input id="iv_district"></div>
+            <div class="col-4"><label>Project</label><input id="iv_project"></div>
+            <div class="col-6"><label>Email</label><input id="iv_email"></div>
+            <div class="col-6"><label>Phone</label><input id="iv_phone"></div>
+            <div class="col-4"><label>Date</label><input id="iv_date" type="date"></div>
+            <div class="col-4"><label>Time</label><input id="iv_time" type="time"></div>
+            <div class="col-4"><label>Status</label><select id="iv_status">
+              <option>Not scheduled</option><option>Scheduled</option><option>Completed</option>
+            </select></div>
+            <div class="col-12">
+              <label><input type="checkbox" id="iv_consent"> Consent to attribute quotes by first name and role</label>
+            </div>
+            <div class="col-12"><label>Notes</label><textarea id="iv_notes" placeholder="Context, sensitivities, priorities"></textarea></div>
+          </div>
+          <div class="actions">
+            <button class="btn" onclick="addInterview()">Add interview</button>
+            <button class="btn secondary" onclick="clearInterviewForm()">Clear</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="page-guide" class="page" style="display:none">
+      <div class="grid">
+        <div class="card">
+          <h3>Framing script</h3>
+          <div class="note">I am not selling a solution. I am mapping the decisions you make, the signals you trust, and the friction you fight. Your words will appear in the summit as themes and quotes so executives decide with the field's reality in mind.</div>
+          <div class="inline small muted">
+            <span class="badge">Guardrails</span>
+            <span class="badge">No tool debates</span>
+            <span class="badge">No promises</span>
+            <span class="badge">Use recent, concrete examples</span>
+            <span class="badge">Offer anonymity for sensitive feedback</span>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Question bank</h3>
+          <div class="row">
+            <div class="col-4">
+              <label>Persona</label>
+              <select id="personaSelect" onchange="renderQuestions()"></select>
+            </div>
+            <div class="col-8 inline">
+              <label>Interview</label>
+              <select id="guideInterviewSelect"></select>
+              <button class="btn secondary" onclick="attachNoteToInterview()">Save notes to interview</button>
+            </div>
+          </div>
+          <div id="questionList" class="list"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="page-insights" class="page" style="display:none">
+      <div class="grid">
+        <div class="card two">
+          <h3>Insight cards</h3>
+          <div class="row">
+            <div class="col-6">
+              <label>Search</label>
+              <input id="searchInsights" placeholder="Search by owner, decision, metric, theme" oninput="renderInsightList()">
+            </div>
+            <div class="col-3">
+              <label>Theme</label>
+              <select id="filterTheme" onchange="renderInsightList()">
+                <option value="">All</option>
+              </select>
+            </div>
+            <div class="col-3">
+              <label>Severity</label>
+              <select id="filterSeverity" onchange="renderInsightList()">
+                <option value="">All</option>
+                <option>Low</option><option>Medium</option><option>High</option>
+              </select>
+            </div>
+          </div>
+          <div class="list" id="insightList"></div>
+        </div>
+        <div class="card">
+          <h3>New insight</h3>
+          <div class="row">
+            <div class="col-6"><label>From interview</label><select id="in_fromInterview"></select></div>
+            <div class="col-6"><label>Theme</label><select id="in_theme"></select></div>
+            <div class="col-12"><label>Situation and last time it happened</label><textarea id="in_situation"></textarea></div>
+            <div class="col-6"><label>Decision at risk</label><input id="in_decision"></div>
+            <div class="col-6"><label>Current workaround and time lost</label><input id="in_workaround"></div>
+            <div class="col-6"><label>Desired outcome in plain language</label><input id="in_outcome"></div>
+            <div class="col-6"><label>Data signal needed, with timing and accuracy threshold</label><input id="in_signal"></div>
+            <div class="col-6"><label>System touchpoints, for example model, InEight, capture tool</label><input id="in_systems"></div>
+            <div class="col-6"><label>Metric that would prove value</label><input id="in_metric" placeholder="forecast error, RFI cycle, PPC, TRIFR, cost variance"></div>
+            <div class="col-6"><label>Dependencies or policy blockers</label><input id="in_blockers"></div>
+            <div class="col-3"><label>Owner</label><input id="in_owner"></div>
+            <div class="col-3"><label>Allies</label><input id="in_allies"></div>
+            <div class="col-3"><label>Severity</label>
+              <select id="in_severity"><option>Low</option><option>Medium</option><option>High</option></select></div>
+            <div class="col-3"><label>Confidence</label>
+              <select id="in_conf"><option>Low</option><option>Medium</option><option>High</option></select></div>
+          </div>
+          <div class="actions">
+            <button class="btn" onclick="addInsight()">Add insight</button>
+            <button class="btn secondary" onclick="clearInsightForm()">Clear</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="page-themes" class="page" style="display:none">
+      <div class="grid">
+        <div class="card two">
+          <h3>Theme manager</h3>
+          <div class="row">
+            <div class="col-6">
+              <label>Search</label>
+              <input id="searchThemes" placeholder="Search by name, owner" oninput="renderThemeList()">
+            </div>
+            <div class="col-6">
+              <label>New theme</label>
+              <div class="row">
+                <div class="col-4"><input id="th_name" placeholder="Theme name"></div>
+                <div class="col-4"><input id="th_target" placeholder="Measurable target"></div>
+                <div class="col-4"><input id="th_color" type="color" value="#22c55e"></div>
+                <div class="col-12"><input id="th_desc" placeholder="Short description"></div>
+                <div class="col-4"><input id="th_owner" placeholder="Owner"></div>
+                <div class="col-4"><input id="th_sponsor" placeholder="Executive sponsor"></div>
+                <div class="col-4"><input id="th_deliverable" placeholder="First deliverable"></div>
+              </div>
+              <div class="actions">
+                <button class="btn" onclick="addTheme()">Add theme</button>
+                <button class="btn secondary" onclick="clearThemeForm()">Clear</button>
+              </div>
+            </div>
+          </div>
+          <div id="themeList" class="list"></div>
+        </div>
+        <div class="card">
+          <h3>Decision loop builder</h3>
+          <div class="row">
+            <div class="col-6"><label>Theme</label><select id="loop_theme"></select></div>
+            <div class="col-6"><label>Target</label><input id="loop_target" placeholder="progress latency under 24 hours at 90 percent coverage"></div>
+            <div class="col-12"><label>Signal captured</label><input id="loop_signal"></div>
+            <div class="col-12"><label>Model processing</label><input id="loop_model"></div>
+            <div class="col-12"><label>Update into InEight</label><input id="loop_update"></div>
+            <div class="col-12"><label>Who uses it and for which decision</label><input id="loop_use"></div>
+          </div>
+          <div class="actions">
+            <button class="btn" onclick="saveLoop()">Save loop</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="page-summit" class="page" style="display:none">
+      <div class="grid">
+        <div class="card two">
+          <h3>Summit design</h3>
+          <div class="inline small muted">
+            <span class="badge">Open with three real quotes per theme</span>
+            <span class="badge">Breakouts validate loop, set target, pick first deliverable and owner</span>
+            <span class="badge">Whole-room sequencing on a single timeline</span>
+          </div>
+          <div class="divider"></div>
+          <div id="summitThemes" class="list"></div>
+        </div>
+        <div class="card">
+          <h3>Voice of the field - quotes</h3>
+          <div class="row">
+            <div class="col-6"><label>Theme</label><select id="q_theme"></select></div>
+            <div class="col-6"><label>Interview</label><select id="q_iv"></select></div>
+            <div class="col-12"><label>Quote text</label><textarea id="q_text" placeholder="Exact words"></textarea></div>
+            <div class="col-6"><label>Attribution</label><input id="q_attr" placeholder="First name and role, if consented"></div>
+            <div class="col-6"><label>Visibility</label><select id="q_vis"><option>Attributed</option><option>Anonymous</option></select></div>
+          </div>
+          <div class="actions">
+            <button class="btn" onclick="addQuote()">Add quote</button>
+          </div>
+          <div id="quoteList" class="list"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="page-scoreboard" class="page" style="display:none">
+      <div class="grid">
+        <div class="card two">
+          <h3>Scoreboard metrics</h3>
+          <p class="small muted">Track the outcomes that matter: schedule variance trend, cost forecast accuracy, incident leading indicators, percent of model-to-InEight fields auto-populated, capture coverage and latency.</p>
+          <div class="row">
+            <div class="col-4"><input id="m_name" placeholder="Metric name"></div>
+            <div class="col-4"><input id="m_target" placeholder="Target value or definition"></div>
+            <div class="col-4"><input id="m_owner" placeholder="Owner"></div>
+            <div class="col-12"><input id="m_def" placeholder="Definition"></div>
+          </div>
+          <div class="actions">
+            <button class="btn" onclick="addMetric()">Add metric</button>
+          </div>
+          <div id="metricList" class="list"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="page-risks" class="page" style="display:none">
+      <div class="grid">
+        <div class="card two">
+          <h3>Risk controls</h3>
+          <div class="inline small muted">
+            <span class="badge">Sampling bias - ensure every district and delivery model is represented</span>
+            <span class="badge">Tool bias - keep tool names out of prompts</span>
+            <span class="badge">Avoid over-promising - use could help and target signal</span>
+            <span class="badge">Privacy - record only with consent and store notes in an access-controlled location</span>
+          </div>
+          <div class="divider"></div>
+          <div class="row">
+            <div class="col-8"><input id="r_desc" placeholder="Risk description"></div>
+            <div class="col-2"><select id="r_status"><option>Open</option><option>Mitigating</option><option>Closed</option></select></div>
+            <div class="col-2"><input id="r_owner" placeholder="Owner"></div>
+            <div class="col-12"><input id="r_mit" placeholder="Mitigation plan"></div>
+          </div>
+          <div class="actions">
+            <button class="btn" onclick="addRisk()">Add risk</button>
+          </div>
+          <div id="riskList" class="list"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="page-schedule" class="page" style="display:none">
+      <div class="grid">
+        <div class="card two">
+          <h3>Scheduling blueprint</h3>
+          <p class="small muted">Two weeks of interviews, 12 to 14 per week, 45 minutes each with 15 minutes buffer, same interviewer plus one note taker for consistency. One day for synthesis, then circulate the two-page readout.</p>
+          <div class="row">
+            <div class="col-4"><input id="s_date" type="date"></div>
+            <div class="col-4"><input id="s_person" placeholder="Interviewee"></div>
+            <div class="col-4"><select id="s_status"><option>Planned</option><option>Confirmed</option><option>Done</option></select></div>
+            <div class="col-12"><input id="s_note" placeholder="Notes"></div>
+          </div>
+          <div class="actions">
+            <button class="btn" onclick="addSchedule()">Add to schedule</button>
+          </div>
+          <div id="scheduleList" class="list"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="page-security" class="page" style="display:none">
+      <div class="grid">
+        <div class="card two">
+          <h3>Security and backup</h3>
+          <p class="small muted">Choose how you store and back up data. Encrypted at rest uses your passphrase to protect data in the browser. Encrypted backups create a password-protected file you can place in a cloud-synced folder.</p>
+          <div class="divider"></div>
+          <div class="row">
+            <div class="col-6">
+              <label>Set or change passphrase</label>
+              <input id="sec_pass" type="password" placeholder="Enter passphrase">
+            </div>
+            <div class="col-6">
+              <label>Confirm passphrase</label>
+              <input id="sec_pass2" type="password" placeholder="Re-enter passphrase">
+            </div>
+            <div class="col-12">
+              <button class="btn" onclick="enableEncryption()">Enable encrypted at rest</button>
+              <button class="btn secondary" onclick="disableEncryption()">Disable encrypted at rest</button>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+          <h3>Encrypted backup file</h3>
+          <div class="inline">
+            <button class="btn" onclick="exportEncrypted()">Export encrypted JSON</button>
+            <input type="file" id="encImport" accept=".json" style="display:none">
+            <button class="btn secondary" onclick="document.getElementById('encImport').click()">Import encrypted JSON</button>
+          </div>
+          <p class="small muted">Tip: save the encrypted file in OneDrive, Google Drive, or Dropbox. The content is encrypted with your passphrase.</p>
+
+          <div class="divider"></div>
+          <h3>Auto-backup to file</h3>
+          <p class="small muted">On supported browsers, you can choose a destination file. The dashboard will update that file automatically on each save. Pick a file inside a cloud-synced folder.</p>
+          <div class="inline">
+            <button class="btn" onclick="setupAutoBackup()">Choose backup file</button>
+            <button class="btn secondary" onclick="clearAutoBackup()">Clear backup file</button>
+            <span class="badge" id="autoBackupStatus">Auto-backup: off</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="page-export" class="page" style="display:none">
+      <div class="grid">
+        <div class="card two">
+          <h3>Export and import</h3>
+          <p class="small muted">Export a JSON backup or CSVs. Use this to share with a note taker or switch devices.</p>
+          <div class="inline">
+            <button class="btn" onclick="downloadJSON()">Export JSON</button>
+            <button class="btn secondary" onclick="downloadCSVs()">Export CSVs</button>
+            <input type="file" id="importFile" accept=".json" style="display:none">
+            <button class="btn secondary" onclick="document.getElementById('importFile').click()">Import JSON</button>
+            <button class="btn secondary" onclick="resetAll()">Reset all data</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="page-about" class="page" style="display:none">
+      <div class="grid">
+        <div class="card two">
+          <h3>About</h3>
+          <p class="small muted">This is a single, offline HTML file. No external services. Duplicate it to keep separate data sets. To share data, export JSON and import on another device.</p>
+          <div class="divider"></div>
+          <p class="small">Copyright notice: all company and product names referenced, for example InEight, belong to their respective owners. This file is for facilitation only.</p>
+          <div class="footer">Version 2.0</div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+// ------------------------ Utilities ------------------------
+const TEXT = new TextEncoder();
+const BINARY = new TextDecoder();
+
+function uid(){return 'id_'+Math.random().toString(36).slice(2)+Date.now().toString(36)}
+
+function b64encode(buf){
+  let binary = '';
+  const bytes = new Uint8Array(buf);
+  const len = bytes.byteLength;
+  for(let i=0;i<len;i++) binary += String.fromCharCode(bytes[i]);
+  return btoa(binary);
+}
+function b64decode(str){
+  const binary = atob(str);
+  const len = binary.length;
+  const bytes = new Uint8Array(len);
+  for(let i=0;i<len;i++) bytes[i] = binary.charCodeAt(i);
+  return bytes.buffer;
+}
+
+// ------------------------ Crypto ------------------------
+const CRYPTO_CONF = {iterations:200000, hash:'SHA-256'};
+let ENC = {enabled:false, passphrase:'', autosaveHandle:null};
+
+async function deriveKey(passphrase, salt){
+  const keyMaterial = await crypto.subtle.importKey('raw', TEXT.encode(passphrase), 'PBKDF2', false, ['deriveKey']);
+  return await crypto.subtle.deriveKey(
+    {name:'PBKDF2', salt, iterations:CRYPTO_CONF.iterations, hash:CRYPTO_CONF.hash},
+    keyMaterial,
+    {name:'AES-GCM', length:256},
+    false,
+    ['encrypt','decrypt']
+  );
+}
+
+async function encryptObject(obj, passphrase){
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const key = await deriveKey(passphrase, salt);
+  const plaintext = TEXT.encode(JSON.stringify(obj));
+  const ciphertext = await crypto.subtle.encrypt({name:'AES-GCM', iv}, key, plaintext);
+  return {
+    v:1,
+    algo:'AES-GCM',
+    kdf:'PBKDF2',
+    iter:CRYPTO_CONF.iterations,
+    salt:b64encode(salt),
+    iv:b64encode(iv),
+    ct:b64encode(ciphertext)
+  };
+}
+
+async function decryptObject(packet, passphrase){
+  try{
+    const salt = new Uint8Array(b64decode(packet.salt));
+    const iv = new Uint8Array(b64decode(packet.iv));
+    const key = await deriveKey(passphrase, salt);
+    const ct = b64decode(packet.ct);
+    const plainBuf = await crypto.subtle.decrypt({name:'AES-GCM', iv}, key, ct);
+    return JSON.parse(BINARY.decode(plainBuf));
+  }catch(e){
+    throw new Error('Decryption failed. Check your passphrase.');
+  }
+}
+
+// ------------------------ Data layer ------------------------
+const STORE_KEY = "presummitDataV2";
+const STORE_KEY_ENC = "presummitDataV2_encrypted";
+let DATA = {
+  version:2,
+  settings:{programName:"Ideal Jobsite 2028"},
+  interviews:[],
+  insights:[],
+  themes:[],
+  quotes:[],
+  metrics:[],
+  risks:[],
+  schedule:[]
+};
+
+function save(){
+  if(ENC.enabled && ENC.passphrase){
+    encryptObject(DATA, ENC.passphrase).then(packet=>{
+      localStorage.removeItem(STORE_KEY);
+      localStorage.setItem(STORE_KEY_ENC, JSON.stringify(packet));
+      setSaved();
+      autoBackupIfEnabled();
+    });
+  }else{
+    localStorage.removeItem(STORE_KEY_ENC);
+    localStorage.setItem(STORE_KEY, JSON.stringify(DATA));
+    setSaved();
+    autoBackupIfEnabled();
+  }
+  refreshCounts();
+  refreshSelectors();
+}
+
+function setSaved(){
+  const s = document.getElementById('saveState');
+  if(s){ s.textContent = "Saved"; setTimeout(()=> s.textContent = "All changes auto-saved", 1000) }
+}
+
+async function load(){
+  const encRaw = localStorage.getItem(STORE_KEY_ENC);
+  const plainRaw = localStorage.getItem(STORE_KEY);
+  if(encRaw){
+    // encrypted at rest
+    ENC.enabled = true;
+    showUnlockOverlay(JSON.parse(encRaw));
+  }else if(plainRaw){
+    try{ DATA = JSON.parse(plainRaw) }catch(e){ console.warn(e) }
+    postLoad();
+  }else{
+    postLoad();
+  }
+}
+
+function postLoad(){
+  document.getElementById('programName').textContent = DATA.settings?.programName || "Ideal Jobsite 2028";
+  refreshCounts();
+  refreshSelectors();
+  renderEverything();
+}
+
+function resetAll(){
+  if(!confirm("Reset all dashboard data? This cannot be undone.")) return;
+  localStorage.removeItem(STORE_KEY);
+  localStorage.removeItem(STORE_KEY_ENC);
+  DATA = {version:2,settings:{programName:"Ideal Jobsite 2028"},interviews:[],insights:[],themes:[],quotes:[],metrics:[],risks:[],schedule:[]};
+  save();
+  renderEverything();
+}
+
+// ------------------------ Unlock overlay for encrypted store ------------------------
+function showUnlockOverlay(packet){
+  const overlay = document.createElement('div');
+  overlay.style.position='fixed'; overlay.style.inset='0'; overlay.style.background='rgba(0,0,0,0.6)';
+  overlay.style.display='grid'; overlay.style.placeItems='center'; overlay.style.zIndex='9999';
+  overlay.innerHTML = `<div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;max-width:480px;width:92%">
+    <h3 style="margin:0 0 8px 0">Enter passphrase</h3>
+    <p class="small muted">Your data is encrypted. Enter the passphrase to unlock.</p>
+    <input id="unlockPass" type="password" placeholder="Passphrase" style="width:100%;margin:8px 0 12px 0;padding:10px;border-radius:10px;border:1px solid var(--border);background:transparent;color:var(--text)">
+    <div class="inline">
+      <button class="btn" id="unlockBtn">Unlock</button>
+      <button class="btn secondary" id="unlockCancel">Start fresh</button>
+    </div>
+    <div id="unlockError" class="small" style="color:#ffb4b4;margin-top:8px"></div>
+  </div>`;
+  document.body.appendChild(overlay);
+  document.getElementById('unlockBtn').onclick = async ()=>{
+    const pass = document.getElementById('unlockPass').value;
+    try{
+      const obj = await decryptObject(packet, pass);
+      DATA = obj; ENC.enabled = true; ENC.passphrase = pass;
+      document.body.removeChild(overlay);
+      postLoad();
+    }catch(e){
+      document.getElementById('unlockError').textContent = e.message;
+    }
+  };
+  document.getElementById('unlockCancel').onclick = ()=>{
+    if(confirm('This will create a fresh empty workspace and keep the encrypted copy untouched. Continue?')){
+      ENC.enabled = false; ENC.passphrase='';
+      localStorage.removeItem(STORE_KEY);
+      postLoad();
+      document.body.removeChild(overlay);
+    }
+  };
+}
+
+// ------------------------ Theme toggle ------------------------
+document.getElementById('themeToggle').addEventListener('click',()=>{
+  const root = document.getElementById('appRoot');
+  root.setAttribute('data-theme', root.getAttribute('data-theme')==='light' ? 'dark' : 'light');
+});
+
+// ------------------------ Navigation ------------------------
+document.querySelectorAll(".nav button").forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll(".nav button").forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const page = btn.dataset.page;
+    document.querySelectorAll(".page").forEach(p=>p.style.display='none');
+    document.getElementById('page-'+page).style.display='block';
+    if(page==='home'){ renderHeatmap(); renderLoops(); }
+    if(page==='interviews'){ renderInterviewList() }
+    if(page==='guide'){ renderQuestions(); }
+    if(page==='insights'){ renderInsightList() }
+    if(page==='themes'){ renderThemeList(); }
+    if(page==='summit'){ renderSummit(); }
+    if(page==='scoreboard'){ renderMetrics(); }
+    if(page==='risks'){ renderRisks(); }
+    if(page==='schedule'){ renderSchedule(); }
+  });
+});
+
+// ------------------------ Reference data ------------------------
+const CATEGORIES = [
+  "A. Core site voices",
+  "B. Control-tower functions",
+  "C. Enabling services",
+  "D. Optional external voices"
+];
+
+const PERSONAS = {
+  "Site operations":[
+    "Walk me through the last week. Where did unpredictability bite you, and how did you discover it?",
+    "Which daily or weekly decisions feel like guesswork? What information would turn them into confident calls?",
+    "What progress signals do you trust today, and which ones do you ignore? Why?",
+    "Describe the ugliest data handoff you do in a typical week. What makes it ugly?",
+    "If a camera, drone, or tag captured a signal you could see by 7 a.m., what two signals would change how you plan your day?",
+    "Where have tech pilots helped, and how do you know they helped? Which metric moved?",
+    "What threshold would make automated progress tracking usable for you, for example accuracy, latency, completeness?"
+  ],
+  "PMs, schedulers, controls":[
+    "Where do cost or schedule forecasts diverge from reality the most, and when do you detect that divergence?",
+    "Which fields in InEight are the least reliable, and what upstream step causes that?",
+    "If the model environment could push only two trustworthy data sets into InEight this quarter, which two would deliver the biggest forecast improvement and why?",
+    "What is your definition of earned progress on your current job, and how is it verified?",
+    "Which manual spreadsheets would you be relieved to retire, and what would need to replace them?"
+  ],
+  "HSE and quality":[
+    "Which leading indicators, if sensed daily, would most reduce incidents or rework?",
+    "Where do you spend time reconciling data across systems, and what gets lost?"
+  ],
+  "Estimating and precon":[
+    "Which quantities or production rates drive your risk the most, and how could construction phase data reduce that risk next time?",
+    "What model attributes most improve handoff quality from precon to operations?"
+  ],
+  "IT, data, and security":[
+    "What are the non-negotiables for identity, device management, and data residency?",
+    "Where do API limits, network constraints, or security policies block field capture or integration today?"
+  ],
+  "Procurement and fabrication":[
+    "What site signals would meaningfully improve supplier performance, prefab readiness, or logistics planning?",
+    "Which contract clauses or delivery models enable or block data sharing with trades?"
+  ],
+  "Executives":[
+    "Which three outcomes would make you say this program is successful in 18 months? Be specific and measurable.",
+    "Where have we promised digital value before and not delivered? What made it stall?",
+    "If we could only fund two streams in the next two quarters, which would you pick and what business result would you expect?"
+  ],
+  "Universal wrap-up":[
+    "What would make this roll-out fail in your world, and how would we notice early?",
+    "Who else should we hear from to avoid blind spots?"
+  ]
+};
+
+// ------------------------ Helpers ------------------------
+function el(tag, attrs={}, children=[]){
+  const node = document.createElement(tag);
+  for(const [k,v] of Object.entries(attrs)){
+    if(k==='class') node.className = v;
+    else if(k==='html') node.innerHTML = v;
+    else if(k==='text') node.textContent = v;
+    else node.setAttribute(k,v);
+  }
+  for(const c of children){ if(c) node.appendChild(c) }
+  return node;
+}
+
+function refreshCounts(){
+  document.getElementById('countInterviews').textContent = DATA.interviews.length;
+  document.getElementById('countInsights').textContent = DATA.insights.length;
+  document.getElementById('countThemes').textContent = DATA.themes.length;
+  document.getElementById('countMetrics').textContent = DATA.metrics.length;
+}
+
+function refreshSelectors(){
+  // categories
+  const catSel = document.getElementById('iv_category');
+  const filterCat = document.getElementById('filterCategory');
+  const catOptions = CATEGORIES.map(c=>`<option>${c}</option>`).join('');
+  catSel.innerHTML = catOptions;
+  filterCat.innerHTML = '<option value="">All</option>'+catOptions;
+
+  // guide persona select
+  const personaSel = document.getElementById('personaSelect');
+  personaSel.innerHTML = Object.keys(PERSONAS).map(p=>`<option>${p}</option>`).join('');
+
+  // interview selects
+  function fillInterviewSelect(id, includeEmpty){
+    const sel = document.getElementById(id);
+    let html = includeEmpty?'<option value="">None</option>':'';
+    html += DATA.interviews.map(iv=>`<option value="${iv.id}">${iv.name} - ${iv.role}</option>`).join('');
+    sel.innerHTML = html;
+  }
+  ['guideInterviewSelect','in_fromInterview','q_iv','quickInterviewSelect'].forEach(id=>fillInterviewSelect(id,true));
+
+  // themes
+  function fillThemeSelect(id, includeAll){
+    const sel = document.getElementById(id);
+    let html = includeAll?'<option value="">All</option>':'';
+    html += DATA.themes.map(t=>`<option value="${t.id}">${t.name}</option>`).join('');
+    sel.innerHTML = html;
+  }
+  ['in_theme','filterTheme','loop_theme','q_theme'].forEach(id=>fillThemeSelect(id,true));
+}
+
+function renderEverything(){
+  renderInterviewList();
+  renderQuestions();
+  renderInsightList();
+  renderThemeList();
+  renderSummit();
+  renderMetrics();
+  renderRisks();
+  renderSchedule();
+  renderHeatmap();
+  renderLoops();
+}
+
+// ------------------------ Home readout ------------------------
+function renderHeatmap(){
+  const area = document.getElementById('readoutArea');
+  area.innerHTML = '';
+  const table = el('table', {class:'table', style:'width:100%;border-collapse:collapse;font-size:14px'});
+  const header = el('tr',{},[
+    el('th',{text:'Theme', style:'border-bottom:1px solid var(--border);padding:8px;text-align:left'}),
+    el('th',{text:'High', style:'border-bottom:1px solid var(--border);padding:8px;text-align:left'}),
+    el('th',{text:'Medium', style:'border-bottom:1px solid var(--border);padding:8px;text-align:left'}),
+    el('th',{text:'Low', style:'border-bottom:1px solid var(--border);padding:8px;text-align:left'}),
+    el('th',{text:'Top pain point', style:'border-bottom:1px solid var(--border);padding:8px;text-align:left'})
+  ]);
+  table.appendChild(header);
+  DATA.themes.forEach(t=>{
+    const insights = DATA.insights.filter(i=>i.themeId===t.id);
+    const hi = insights.filter(i=>i.severity==='High').length;
+    const md = insights.filter(i=>i.severity==='Medium').length;
+    const lo = insights.filter(i=>i.severity==='Low').length;
+    const top = insights[0]?.decision || '';
+    const row = el('tr',{},[
+      el('td', {style:'border-bottom:1px solid var(--border);padding:8px'}, [el('span',{class:'pill',text:t.name})]),
+      el('td', {style:'border-bottom:1px solid var(--border);padding:8px', text:hi.toString()}),
+      el('td', {style:'border-bottom:1px solid var(--border);padding:8px', text:md.toString()}),
+      el('td', {style:'border-bottom:1px solid var(--border);padding:8px', text:lo.toString()}),
+      el('td', {style:'border-bottom:1px solid var(--border);padding:8px', text:top})
+    ]);
+    table.appendChild(row);
+  });
+  const wrap = el('div',{class:'item'},[el('div',{class:'rowtop'},[el('div',{text:'Heatmap of pain'})])]);
+  wrap.appendChild(table);
+  area.appendChild(wrap);
+}
+
+function renderLoops(){
+  const area = document.getElementById('readoutArea');
+  const wrap = el('div',{class:'item'},[el('div',{class:'rowtop'},[el('div',{text:'Draft loops'})])]);
+  DATA.themes.forEach(t=>{
+    const loop = t.loop || {};
+    const box = el('div',{class:'note'},[
+      el('div',{html:`<b>${t.name}</b> - Target: ${t.target || 'n/a'}`}),
+      el('div',{class:'small muted',html:`Signal: ${loop.signal || 'n/a'} • Model: ${loop.model || 'n/a'} • Update: ${loop.update || 'n/a'} • Use: ${loop.use || 'n/a'}`})
+    ]);
+    wrap.appendChild(box);
+  });
+  area.appendChild(wrap);
+}
+
+// ------------------------ Interviews ------------------------
+function addInterview(){
+  const iv = {
+    id: uid(),
+    name: document.getElementById('iv_name').value.trim(),
+    role: document.getElementById('iv_role').value.trim(),
+    category: document.getElementById('iv_category').value,
+    district: document.getElementById('iv_district').value.trim(),
+    project: document.getElementById('iv_project').value.trim(),
+    email: document.getElementById('iv_email').value.trim(),
+    phone: document.getElementById('iv_phone').value.trim(),
+    date: document.getElementById('iv_date').value,
+    time: document.getElementById('iv_time').value,
+    status: document.getElementById('iv_status').value,
+    consent: document.getElementById('iv_consent').checked,
+    notes: document.getElementById('iv_notes').value.trim(),
+    persona:""
+  };
+  if(!iv.name){ alert("Name is required"); return }
+  DATA.interviews.push(iv);
+  save();
+  clearInterviewForm();
+  renderInterviewList();
+}
+
+function clearInterviewForm(){
+  ['iv_name','iv_role','iv_district','iv_project','iv_email','iv_phone','iv_date','iv_time','iv_notes'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('iv_status').value='Not scheduled';
+  document.getElementById('iv_consent').checked=false;
+}
+
+function renderInterviewList(){
+  const q = document.getElementById('searchInterview').value.toLowerCase();
+  const cat = document.getElementById('filterCategory').value;
+  const st = document.getElementById('filterStatus').value;
+  const list = document.getElementById('interviewList');
+  list.innerHTML = '';
+  DATA.interviews
+    .filter(iv=>!q || [iv.name,iv.role,iv.district,iv.project].join(' ').toLowerCase().includes(q))
+    .filter(iv=>!cat || iv.category===cat)
+    .filter(iv=>!st || iv.status===st)
+    .forEach(iv=>{
+      const item = el('div',{class:'item'});
+      const row = el('div',{class:'rowtop'});
+      row.appendChild(el('div',{html:`<b>${iv.name}</b> • ${iv.role} • <span class="muted">${iv.category}</span>`}));
+      const tags = el('div', {class:'inline'});
+      if(iv.status==='Completed') tags.appendChild(el('span',{class:'tag ok',text:'Completed'}));
+      else if(iv.status==='Scheduled') tags.appendChild(el('span',{class:'tag warn',text:'Scheduled'}));
+      else tags.appendChild(el('span',{class:'tag',text:'Not scheduled'}));
+      if(iv.consent) tags.appendChild(el('span',{class:'badge',text:'Consent to attribute'}));
+      row.appendChild(tags);
+      item.appendChild(row);
+      const kvs = el('div',{class:'kvs'},[
+        el('div',{class:'kv',html:`<b>District</b><br>${iv.district||'-'}`}),
+        el('div',{class:'kv',html:`<b>Project</b><br>${iv.project||'-'}`}),
+        el('div',{class:'kv',html:`<b>Date</b><br>${iv.date||'-'}`}),
+        el('div',{class:'kv',html:`<b>Time</b><br>${iv.time||'-'}`})
+      ]);
+      item.appendChild(kvs);
+      if(iv.notes) item.appendChild(el('div',{class:'note',text:iv.notes}));
+      const actions = el('div',{class:'actions'});
+      const del = el('button',{class:'btn secondary',text:'Delete'});
+      del.addEventListener('click',()=>{
+        if(confirm('Delete interview?')){
+          DATA.interviews = DATA.interviews.filter(x=>x.id!==iv.id);
+          // unlink from insights and quotes
+          DATA.insights.forEach(i=>{ if(i.fromInterview===iv.id) i.fromInterview='' });
+          DATA.quotes.forEach(q=>{ if(q.ivId===iv.id) q.ivId='' });
+          save(); renderInterviewList(); refreshSelectors();
+        }
+      });
+      const mark = el('button',{class:'btn secondary',text:'Mark completed'});
+      mark.addEventListener('click',()=>{ iv.status='Completed'; save(); renderInterviewList() });
+      const openGuide = el('button',{class:'btn',text:'Open guide'});
+      openGuide.addEventListener('click',()=>{
+        document.querySelector('[data-page="guide"]').click();
+        document.getElementById('guideInterviewSelect').value = iv.id;
+        renderQuestions();
+      });
+      actions.appendChild(openGuide);actions.appendChild(mark);actions.appendChild(del);
+      item.appendChild(actions);
+      list.appendChild(item);
+    });
+}
+
+// Quick capture on home
+function openGuideForSelected(){
+  const id = document.getElementById('quickInterviewSelect').value;
+  if(!id){ alert("Pick an interviewee first"); return }
+  document.querySelector('[data-page="guide"]').click();
+  document.getElementById('guideInterviewSelect').value = id;
+  renderQuestions();
+}
+function openNewInsightFromInterview(){
+  const id = document.getElementById('quickInterviewSelect').value;
+  if(!id){ alert("Pick an interviewee first"); return }
+  document.querySelector('[data-page="insights"]').click();
+  document.getElementById('in_fromInterview').value = id;
+}
+
+// ------------------------ Guide ------------------------
+function renderQuestions(){
+  const personaKey = document.getElementById('personaSelect').value || Object.keys(PERSONAS)[0];
+  const qs = PERSONAS[personaKey] || [];
+  const list = document.getElementById('questionList');
+  list.innerHTML = '';
+  qs.concat(PERSONAS["Universal wrap-up"]).forEach((q,idx)=>{
+    const wrap = el('div',{class:'item'});
+    wrap.appendChild(el('div',{html:`<div class="inline"><span class="badge">Q${idx+1}</span> <span>${q}</span></div>`}));
+    const ta = el('textarea',{placeholder:"Notes for this question"});
+    wrap.appendChild(ta);
+    list.appendChild(wrap);
+  });
+  // also show contextual quick list on home
+  const selectedId = document.getElementById('quickInterviewSelect').value;
+  const quick = document.getElementById('quickQuestions');
+  quick.innerHTML = '';
+  qs.slice(0,4).forEach(q=> quick.appendChild(el('div',{class:'note',text:q})));
+}
+
+function attachNoteToInterview(){
+  const ivId = document.getElementById('guideInterviewSelect').value;
+  if(!ivId){ alert("Pick an interview to attach notes"); return }
+  const notes = Array.from(document.querySelectorAll('#questionList textarea')).map(t=>t.value.trim()).filter(Boolean);
+  const iv = DATA.interviews.find(x=>x.id===ivId);
+  iv.notes = (iv.notes?iv.notes+'\n\n':'') + notes.map(n=>'- '+n).join('\n');
+  save();
+  alert("Notes saved to interview");
+}
+
+// ------------------------ Insights ------------------------
+function addInsight(){
+  const ins = {
+    id: uid(),
+    fromInterview: document.getElementById('in_fromInterview').value,
+    themeId: document.getElementById('in_theme').value,
+    situation: document.getElementById('in_situation').value.trim(),
+    decision: document.getElementById('in_decision').value.trim(),
+    workaround: document.getElementById('in_workaround').value.trim(),
+    outcome: document.getElementById('in_outcome').value.trim(),
+    signal: document.getElementById('in_signal').value.trim(),
+    systems: document.getElementById('in_systems').value.trim(),
+    metric: document.getElementById('in_metric').value.trim(),
+    blockers: document.getElementById('in_blockers').value.trim(),
+    owner: document.getElementById('in_owner').value.trim(),
+    allies: document.getElementById('in_allies').value.trim(),
+    severity: document.getElementById('in_severity').value,
+    confidence: document.getElementById('in_conf').value,
+    created: new Date().toISOString()
+  };
+  if(!ins.situation || !ins.decision){ alert("Situation and Decision are required"); return }
+  DATA.insights.push(ins);
+  save();
+  clearInsightForm();
+  renderInsightList();
+}
+
+function clearInsightForm(){
+  ['in_fromInterview','in_theme','in_situation','in_decision','in_workaround','in_outcome','in_signal','in_systems','in_metric','in_blockers','in_owner','in_allies'].forEach(id=>{
+    const elx = document.getElementById(id);
+    if(elx.tagName==='SELECT') elx.value='';
+    else elx.value='';
+  });
+  document.getElementById('in_severity').value='Low';
+  document.getElementById('in_conf').value='Medium';
+}
+
+function renderInsightList(){
+  const q = document.getElementById('searchInsights').value.toLowerCase();
+  const theme = document.getElementById('filterTheme').value;
+  const sev = document.getElementById('filterSeverity').value;
+  const list = document.getElementById('insightList');
+  list.innerHTML = '';
+  DATA.insights
+    .filter(i=>!q || [i.owner,i.decision,i.metric,i.outcome,i.situation].join(' ').toLowerCase().includes(q))
+    .filter(i=>!theme || i.themeId===theme)
+    .filter(i=>!sev || i.severity===sev)
+    .forEach(i=>{
+      const themeObj = DATA.themes.find(t=>t.id===i.themeId);
+      const iv = DATA.interviews.find(x=>x.id===i.fromInterview);
+      const item = el('div',{class:'item'});
+      const row = el('div',{class:'rowtop'});
+      row.appendChild(el('div',{html:`<b>${i.decision||'Decision'}</b> • <span class="muted">${themeObj?themeObj.name:'No theme'}</span>`}));
+      const tag = el('span',{class:'tag '+(i.severity==='High'?'danger':i.severity==='Medium'?'warn':'ok'),text:i.severity});
+      row.appendChild(tag);
+      item.appendChild(row);
+      const kvs = el('div',{class:'kvs'},[
+        el('div',{class:'kv',html:`<b>Outcome</b><br>${i.outcome||'-'}`}),
+        el('div',{class:'kv',html:`<b>Signal</b><br>${i.signal||'-'}`}),
+        el('div',{class:'kv',html:`<b>Metric</b><br>${i.metric||'-'}`}),
+        el('div',{class:'kv',html:`<b>Owner</b><br>${i.owner||'-'}`}),
+      ]);
+      item.appendChild(kvs);
+      const sys = el('div',{class:'small muted',html:`Systems: ${i.systems||'-'} • Blockers: ${i.blockers||'-'}`});
+      item.appendChild(sys);
+      if(i.situation) item.appendChild(el('div',{class:'note',text:i.situation}));
+      const actions = el('div',{class:'actions'});
+      const del = el('button',{class:'btn secondary',text:'Delete'});
+      del.addEventListener('click',()=>{
+        if(confirm('Delete insight?')){ DATA.insights = DATA.insights.filter(x=>x.id!==i.id); save(); renderInsightList(); }
+      });
+      const link = el('div',{class:'small muted right',text: iv?`From: ${iv.name} - ${iv.role}`:'Unlinked'});
+      actions.appendChild(link);
+      actions.appendChild(del);
+      item.appendChild(actions);
+      list.appendChild(item);
+    });
+}
+
+// ------------------------ Themes ------------------------
+function addTheme(){
+  const t = {
+    id: uid(),
+    name: document.getElementById('th_name').value.trim(),
+    target: document.getElementById('th_target').value.trim(),
+    color: document.getElementById('th_color').value,
+    desc: document.getElementById('th_desc').value.trim(),
+    owner: document.getElementById('th_owner').value.trim(),
+    sponsor: document.getElementById('th_sponsor').value.trim(),
+    deliverable: document.getElementById('th_deliverable').value.trim(),
+    loop:{signal:'',model:'',update:'',use:''}
+  };
+  if(!t.name){ alert("Theme name is required"); return }
+  DATA.themes.push(t);
+  save();
+  clearThemeForm();
+  renderThemeList();
+}
+
+function clearThemeForm(){
+  ['th_name','th_target','th_desc','th_owner','th_sponsor','th_deliverable'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('th_color').value='#22c55e';
+}
+
+function renderThemeList(){
+  const q = document.getElementById('searchThemes').value?.toLowerCase() || '';
+  const list = document.getElementById('themeList');
+  list.innerHTML = '';
+  DATA.themes
+    .filter(t=>!q || [t.name,t.owner,t.desc].join(' ').toLowerCase().includes(q))
+    .forEach(t=>{
+      const item = el('div',{class:'item'});
+      const row = el('div',{class:'rowtop'});
+      const colorDot = `<span class="dot" style="background:${t.color}"></span>`;
+      row.appendChild(el('div',{html:`${colorDot} <b>${t.name}</b> • <span class="muted">${t.desc||''}</span>`}));
+      const chip = el('span',{class:'tag',html:`Target: <b>${t.target||'n/a'}</b>`});
+      row.appendChild(chip);
+      item.appendChild(row);
+      const kvs = el('div',{class:'kvs'},[
+        el('div',{class:'kv',html:`<b>Owner</b><br>${t.owner||'-'}`}),
+        el('div',{class:'kv',html:`<b>Sponsor</b><br>${t.sponsor||'-'}`}),
+        el('div',{class:'kv',html:`<b>Deliverable</b><br>${t.deliverable||'-'}`}),
+        el('div',{class:'kv',html:`<b>Insights</b><br>${DATA.insights.filter(i=>i.themeId===t.id).length}`}),
+      ]);
+      item.appendChild(kvs);
+      const loop = t.loop||{};
+      item.appendChild(el('div',{class:'small muted',html:`Loop: Signal <span class="pill">${loop.signal||'n/a'}</span> • Model <span class="pill">${loop.model||'n/a'}</span> • Update <span class="pill">${loop.update||'n/a'}</span> • Use <span class="pill">${loop.use||'n/a'}</span>`}));
+      const actions = el('div',{class:'actions'});
+      const del = el('button',{class:'btn secondary',text:'Delete'});
+      del.addEventListener('click',()=>{
+        if(confirm('Delete theme?')){
+          DATA.themes = DATA.themes.filter(x=>x.id!==t.id);
+          DATA.insights.forEach(i=>{ if(i.themeId===t.id) i.themeId='' });
+          save(); renderThemeList(); refreshSelectors();
+        }
+      });
+      const editLoop = el('button',{class:'btn secondary',text:'Edit loop'});
+      editLoop.addEventListener('click',()=>{
+        document.querySelector('[data-page="themes"]').click();
+        document.getElementById('loop_theme').value = t.id;
+        document.getElementById('loop_target').value = t.target || '';
+        document.getElementById('loop_signal').value = t.loop?.signal || '';
+        document.getElementById('loop_model').value = t.loop?.model || '';
+        document.getElementById('loop_update').value = t.loop?.update || '';
+        document.getElementById('loop_use').value = t.loop?.use || '';
+      });
+      actions.appendChild(editLoop);
+      actions.appendChild(del);
+      item.appendChild(actions);
+      list.appendChild(item);
+    });
+}
+
+function saveLoop(){
+  const id = document.getElementById('loop_theme').value;
+  if(!id){ alert("Pick a theme"); return }
+  const t = DATA.themes.find(x=>x.id===id);
+  t.target = document.getElementById('loop_target').value;
+  t.loop = {
+    signal: document.getElementById('loop_signal').value,
+    model: document.getElementById('loop_model').value,
+    update: document.getElementById('loop_update').value,
+    use: document.getElementById('loop_use').value
+  };
+  save();
+  renderThemeList();
+}
+
+// ------------------------ Summit ------------------------
+function addQuote(){
+  const q = {
+    id: uid(),
+    themeId: document.getElementById('q_theme').value,
+    ivId: document.getElementById('q_iv').value,
+    text: document.getElementById('q_text').value.trim(),
+    attr: document.getElementById('q_attr').value.trim(),
+    vis: document.getElementById('q_vis').value
+  };
+  if(!q.text){ alert("Quote text required"); return }
+  DATA.quotes.push(q);
+  save();
+  renderSummit();
+  document.getElementById('q_text').value='';
+  document.getElementById('q_attr').value='';
+}
+
+function renderSummit(){
+  const area = document.getElementById('summitThemes');
+  area.innerHTML='';
+  DATA.themes.forEach(t=>{
+    const box = el('div',{class:'item'});
+    const row = el('div',{class:'rowtop'});
+    row.appendChild(el('div',{html:`<b>${t.name}</b> - Target: <span class="pill">${t.target||'n/a'}</span>`}));
+    const count = DATA.insights.filter(i=>i.themeId===t.id).length;
+    row.appendChild(el('span',{class:'badge',text:`${count} insights`}));
+    box.appendChild(row);
+    const loop = t.loop||{};
+    box.appendChild(el('div',{class:'small muted',html:`Loop: Signal ${loop.signal||'n/a'} • Model ${loop.model||'n/a'} • Update ${loop.update||'n/a'} • Use ${loop.use||'n/a'}`}));
+    const quotes = DATA.quotes.filter(q=>q.themeId===t.id).slice(0,3);
+    quotes.forEach(q=>{
+      const iv = DATA.interviews.find(x=>x.id===q.ivId);
+      const who = q.vis==='Anonymous'?'Anonymous':(q.attr|| (iv?(iv.name.split(' ')[0]+', '+iv.role):'Attributed'));
+      box.appendChild(el('div',{class:'quote',html:`“${q.text}” <span class="small muted">- ${who}</span>`}));
+    });
+    area.appendChild(box);
+  });
+
+  const qList = document.getElementById('quoteList');
+  qList.innerHTML='';
+  DATA.quotes.forEach(q=>{
+    const t = DATA.themes.find(x=>x.id===q.themeId);
+    const iv = DATA.interviews.find(x=>x.id===q.ivId);
+    const item = el('div',{class:'item'});
+    item.appendChild(el('div',{class:'rowtop',html:`<b>${t?t.name:'No theme'}</b> • <span class="muted">${iv?iv.name+' - '+iv.role:'Unlinked'}</span>`}));
+    item.appendChild(el('div',{class:'note',text:q.text}));
+    const actions = el('div',{class:'actions'});
+    const del = el('button',{class:'btn secondary',text:'Delete'});
+    del.addEventListener('click',()=>{
+      if(confirm('Delete quote?')){ DATA.quotes = DATA.quotes.filter(x=>x.id!==q.id); save(); renderSummit(); }
+    });
+    actions.appendChild(del);
+    item.appendChild(actions);
+    qList.appendChild(item);
+  });
+}
+
+// ------------------------ Scoreboard ------------------------
+function addMetric(){
+  const m = {
+    id: uid(),
+    name: document.getElementById('m_name').value.trim(),
+    target: document.getElementById('m_target').value.trim(),
+    owner: document.getElementById('m_owner').value.trim(),
+    def: document.getElementById('m_def').value.trim(),
+    status:'Amber',
+    current:'',
+    history:[]
+  };
+  if(!m.name){ alert("Metric name required"); return }
+  DATA.metrics.push(m); save(); renderMetrics();
+  ['m_name','m_target','m_owner','m_def'].forEach(id=>document.getElementById(id).value='');
+}
+
+function renderMetrics(){
+  const list = document.getElementById('metricList');
+  list.innerHTML='';
+  DATA.metrics.forEach(m=>{
+    const item = el('div',{class:'item'});
+    const row = el('div',{class:'rowtop'});
+    row.appendChild(el('div',{html:`<b>${m.name}</b> • <span class="muted">${m.def||''}</span>`}));
+    const st = m.status==='Green'?'rag-green':m.status==='Red'?'rag-red':'rag-amber';
+    row.appendChild(el('div',{class:'status'},[el('span',{class:'dot '+st}), el('span',{class:'muted small',text:m.status})]));
+    item.appendChild(row);
+    const kvs = el('div',{class:'kvs'},[
+      el('div',{class:'kv',html:`<b>Target</b><br>${m.target||'-'}`}),
+      el('div',{class:'kv',html:`<b>Owner</b><br>${m.owner||'-'}`}),
+      el('div',{class:'kv',html:`<b>Current</b><br>${m.current||'-'}`}),
+      el('div',{class:'kv',html:`<b>Updates</b><br>${m.history.length}`})
+    ]);
+    item.appendChild(kvs);
+    // controls
+    const controls = el('div',{class:'inline'});
+    const cur = el('input',{placeholder:"Update current value"});
+    const addBtn = el('button',{class:'btn secondary',text:'Add data point'});
+    addBtn.addEventListener('click',()=>{
+      if(!cur.value.trim()) return;
+      m.current = cur.value.trim();
+      m.history.push({date:new Date().toISOString(), value:m.current});
+      save(); renderMetrics();
+    });
+    const sel = el('select');
+    ['Green','Amber','Red'].forEach(s=>{ const o = el('option',{text:s}); if(m.status===s) o.selected=true; sel.appendChild(o) });
+    sel.addEventListener('change',()=>{ m.status = sel.value; save(); renderMetrics() });
+    controls.appendChild(cur);controls.appendChild(addBtn);controls.appendChild(sel);
+    item.appendChild(controls);
+    // sparkline
+    const canvas = el('canvas',{width:400,height:60,style:"width:100%;height:60px;margin-top:8px;border:1px solid var(--border);border-radius:8px;background:transparent"});
+    item.appendChild(canvas);
+    drawSparkline(canvas, m.history.map(h=>parseFloat(h.value)).filter(v=>!Number.isNaN(v)));
+    // delete
+    const actions = el('div',{class:'actions'});
+    const del = el('button',{class:'btn secondary',text:'Delete'});
+    del.addEventListener('click',()=>{
+      if(confirm('Delete metric?')){ DATA.metrics = DATA.metrics.filter(x=>x.id!==m.id); save(); renderMetrics(); }
+    });
+    actions.appendChild(del);
+    item.appendChild(actions);
+    list.appendChild(item);
+  });
+}
+
+function drawSparkline(canvas, data){
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  if(data.length<2){ ctx.fillStyle='#94a3b8'; ctx.fillText('Add at least two data points for a trend', 10, 34); return }
+  const max = Math.max(...data), min = Math.min(...data);
+  const pad = 8;
+  const w = canvas.width - pad*2;
+  const h = canvas.height - pad*2;
+  ctx.lineWidth = 2; ctx.strokeStyle = '#38bdf8'; ctx.beginPath();
+  data.forEach((v,i)=>{
+    const x = pad + (i/(data.length-1))*w;
+    const y = pad + (1-(v-min)/(max-min))*h;
+    if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+  });
+  ctx.stroke();
+}
+
+// ------------------------ Risks ------------------------
+function addRisk(){
+  const r = {
+    id: uid(),
+    desc: document.getElementById('r_desc').value.trim(),
+    status: document.getElementById('r_status').value,
+    owner: document.getElementById('r_owner').value.trim(),
+    mit: document.getElementById('r_mit').value.trim()
+  };
+  if(!r.desc){ alert("Risk description required"); return }
+  DATA.risks.push(r); save(); renderRisks();
+  ['r_desc','r_owner','r_mit'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('r_status').value='Open';
+}
+
+function renderRisks(){
+  const list = document.getElementById('riskList');
+  list.innerHTML='';
+  DATA.risks.forEach(r=>{
+    const item = el('div',{class:'item'});
+    const row = el('div',{class:'rowtop'});
+    row.appendChild(el('div',{html:`<b>${r.desc}</b>`}));
+    const tag = el('span',{class:'tag '+(r.status==='Closed'?'ok':r.status==='Mitigating'?'warn':''),text:r.status});
+    row.appendChild(tag);
+    item.appendChild(row);
+    const kvs = el('div',{class:'kvs'},[
+      el('div',{class:'kv',html:`<b>Owner</b><br>${r.owner||'-'}`}),
+      el('div',{class:'kv',html:`<b>Mitigation</b><br>${r.mit||'-'}`})
+    ]);
+    item.appendChild(kvs);
+    const del = el('button',{class:'btn secondary',text:'Delete'});
+    del.addEventListener('click',()=>{
+      if(confirm('Delete risk?')){ DATA.risks = DATA.risks.filter(x=>x.id!==r.id); save(); renderRisks(); }
+    });
+    const actions = el('div',{class:'actions'}); actions.appendChild(del); item.appendChild(actions);
+    list.appendChild(item);
+  });
+}
+
+// ------------------------ Schedule ------------------------
+function addSchedule(){
+  const s = {
+    id: uid(),
+    date: document.getElementById('s_date').value,
+    person: document.getElementById('s_person').value.trim(),
+    status: document.getElementById('s_status').value,
+    note: document.getElementById('s_note').value.trim()
+  };
+  if(!s.date || !s.person){ alert("Date and interviewee required"); return }
+  DATA.schedule.push(s); save(); renderSchedule();
+  ['s_date','s_person','s_note'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('s_status').value='Planned';
+}
+
+function renderSchedule(){
+  const list = document.getElementById('scheduleList');
+  list.innerHTML='';
+  DATA.schedule.sort((a,b)=>a.date.localeCompare(b.date)).forEach(s=>{
+    const item = el('div',{class:'item'});
+    const row = el('div',{class:'rowtop'});
+    row.appendChild(el('div',{html:`<b>${s.person}</b> • <span class="muted">${s.date}</span>`}));
+    const tag = el('span',{class:'tag '+(s.status==='Done'?'ok':s.status==='Confirmed'?'warn':''),text:s.status});
+    row.appendChild(tag);
+    item.appendChild(row);
+    if(s.note) item.appendChild(el('div',{class:'note',text:s.note}));
+    const del = el('button',{class:'btn secondary',text:'Delete'});
+    del.addEventListener('click',()=>{
+      if(confirm('Delete entry?')){ DATA.schedule = DATA.schedule.filter(x=>x.id!==s.id); save(); renderSchedule(); }
+    });
+    const actions = el('div',{class:'actions'}); actions.appendChild(del); item.appendChild(actions);
+    list.appendChild(item);
+  });
+}
+
+// ------------------------ Export / Import ------------------------
+function downloadJSON(){
+  const blob = new Blob([JSON.stringify(DATA,null,2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'presummit_dashboard_backup.json'; a.click();
+  URL.revokeObjectURL(url);
+}
+
+function toCSV(rows){
+  if(rows.length===0) return '';
+  const headers = Object.keys(rows[0]);
+  const esc = v => ('"'+String(v??'').replace(/"/g,'""')+'"');
+  const lines = [headers.map(esc).join(',')];
+  rows.forEach(r=>lines.push(headers.map(h=>esc(r[h])).join(',')));
+  return lines.join('\n');
+}
+
+function downloadCSVs(){
+  const files = [
+    {name:'interviews.csv', rows:DATA.interviews},
+    {name:'insights.csv', rows:DATA.insights},
+    {name:'themes.csv', rows:DATA.themes},
+    {name:'quotes.csv', rows:DATA.quotes},
+    {name:'metrics.csv', rows:DATA.metrics},
+    {name:'risks.csv', rows:DATA.risks},
+    {name:'schedule.csv', rows:DATA.schedule}
+  ];
+  files.forEach(f=>{
+    const blob = new Blob([toCSV(f.rows)], {type:'text/csv'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = f.name; a.click(); URL.revokeObjectURL(url);
+  });
+}
+
+document.getElementById('importFile').addEventListener('change', (e)=>{
+  const file = e.target.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try{
+      const obj = JSON.parse(reader.result);
+      if(!obj || typeof obj!=='object') throw new Error('Invalid JSON');
+      DATA = obj; save(); renderEverything();
+      alert('Import successful');
+    }catch(err){
+      alert('Import failed: '+err.message);
+    }
+  };
+  reader.readAsText(file);
+});
+
+// ------------------------ Encrypted backup import/export ------------------------
+async function exportEncrypted(){
+  if(!ENC.passphrase){ alert('Set a passphrase under Security first'); return }
+  const packet = await encryptObject(DATA, ENC.passphrase);
+  const blob = new Blob([JSON.stringify(packet,null,2)], {type:'application/json'});
+  const a = document.createElement('a');
+  const url = URL.createObjectURL(blob);
+  a.href = url; a.download = 'presummit_encrypted_backup.json'; a.click();
+  URL.revokeObjectURL(url);
+}
+
+document.getElementById('encImport').addEventListener('change', async (e)=>{
+  const file = e.target.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = async () => {
+    try{
+      const packet = JSON.parse(reader.result);
+      if(!ENC.passphrase){ const p = prompt('Enter passphrase to decrypt'); if(!p){ return } ENC.passphrase = p; ENC.enabled = true; }
+      const obj = await decryptObject(packet, ENC.passphrase);
+      DATA = obj; save(); renderEverything();
+      alert('Encrypted import successful');
+    }catch(err){
+      alert('Encrypted import failed: '+err.message);
+    }
+  };
+  reader.readAsText(file);
+});
+
+// ------------------------ Encryption on local storage ------------------------
+function enableEncryption(){
+  const p1 = document.getElementById('sec_pass').value;
+  const p2 = document.getElementById('sec_pass2').value;
+  if(!p1 || p1!==p2){ alert('Passphrases do not match'); return }
+  ENC.enabled = true; ENC.passphrase = p1;
+  save();
+  alert('Encrypted at rest is enabled');
+}
+
+function disableEncryption(){
+  ENC.enabled = false; ENC.passphrase='';
+  save();
+  alert('Encrypted at rest is disabled');
+}
+
+// ------------------------ Auto-backup to file ------------------------
+async function setupAutoBackup(){
+  if(!window.showSaveFilePicker){ alert('Your browser does not support File System Access API. You can still use Export to create backups.'); return }
+  if(!ENC.passphrase){ alert('Set a passphrase first. Auto-backup writes encrypted content.'); return }
+  try{
+    const handle = await window.showSaveFilePicker({
+      suggestedName:'presummit_backup_encrypted.json',
+      types:[{description:'JSON', accept:{'application/json':['.json']}}]
+    });
+    ENC.autosaveHandle = handle;
+    document.getElementById('autoBackupStatus').textContent = 'Auto-backup: on';
+    await autoBackupIfEnabled();
+  }catch(err){
+    console.warn(err);
+  }
+}
+
+function clearAutoBackup(){
+  ENC.autosaveHandle = null;
+  document.getElementById('autoBackupStatus').textContent = 'Auto-backup: off';
+}
+
+async function autoBackupIfEnabled(){
+  if(!ENC.autosaveHandle) return;
+  try{
+    const packet = ENC.passphrase ? await encryptObject(DATA, ENC.passphrase) : DATA;
+    const writable = await ENC.autosaveHandle.createWritable();
+    await writable.write(new Blob([JSON.stringify(packet,null,2)], {type:'application/json'}));
+    await writable.close();
+  }catch(err){
+    console.warn('Auto-backup failed:', err);
+  }
+}
+
+// ------------------------ Quick buttons ------------------------
+document.getElementById('newInterviewBtn').addEventListener('click',()=>{
+  document.querySelector('[data-page="interviews"]').click();
+  document.getElementById('iv_name').focus();
+});
+document.getElementById('newInsightBtn').addEventListener('click',()=>{
+  document.querySelector('[data-page="insights"]').click();
+  document.getElementById('in_situation').focus();
+});
+document.getElementById('newThemeBtn').addEventListener('click',()=>{
+  document.querySelector('[data-page="themes"]').click();
+  document.getElementById('th_name').focus();
+});
+
+// init
+load();
+renderEverything();
+</script>
+</body>
+</html>
